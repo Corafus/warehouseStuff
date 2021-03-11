@@ -9,6 +9,8 @@ public class BundleHandler : MonoBehaviour
 
     public TextAsset textJSON;
     public ShelfHandler shelfHandler;
+    public GameObject stackPrefab;
+    public GameObject bundlePrefab;
 
 
     [System.Serializable]
@@ -61,6 +63,11 @@ public class BundleHandler : MonoBehaviour
           int bundleColumn =  currentBundle.location.column;
           string bundleShelf = currentBundle.location.shelf;
 
+          string bundleName = bundleAisle + bundleColumn.ToString() + bundleShelf + "bundle";
+          InstantiateBundles(i, bundleName);
+
+
+
           Vector3 bundlePosition = Vector3.zero;
 
           for(var j = 0; j < shelfHandler.myShelfList.aisles.Length; j++){
@@ -71,20 +78,15 @@ public class BundleHandler : MonoBehaviour
                 ShelfHandler.Column currentColumn = currentAisle.columns[k];
                 if(currentColumn.column == bundleColumn){
 
+
+
+
+                  //float currentHeight = 0f;
                   for(var l = 0; l < currentColumn.shelves.Length; l++){
+
                     ShelfHandler.Shelf currentShelf = currentColumn.shelves[l];
-                    if(currentShelf.shelf == bundleShelf){
 
 
-                      GameObject shelfGameObject = GameObject.Find(currentAisle.aisle + currentColumn.column.ToString() + currentShelf.shelf);
-
-
-                      shelfGameObject.GetComponent<shelfBehavior>().bundles.Add(new shelfBehavior.Bundle() {partNumber = currentBundle.partNumber,
-                        location = new shelfBehavior.Location(){aisle = currentAisle.aisle, column = currentColumn.column, shelf = currentShelf.shelf},
-                        position = new Vector3(bundlePosition.x, bundlePosition.y, bundlePosition.z),
-                        quantity = currentBundle.quantity,
-                        size = currentBundle.size});
-                    }
                   }
                 }
               }
@@ -92,6 +94,39 @@ public class BundleHandler : MonoBehaviour
           }
        }
     }
+
+    void InstantiateBundles(int i, string bundleName){
+      Bundle currentBundle = myBundleList.bundles[i];
+
+
+
+            GameObject bundle = (GameObject)Instantiate(bundlePrefab, Vector3.zero, Quaternion.Euler(Vector3.forward));
+
+            bundle.name = bundleName;
+
+            Transform bundleChild = bundle.transform.GetChild(0);
+            bundleChild.transform.localScale = new Vector3(currentBundle.size.x, currentBundle.size.y, currentBundle.size.z);
+            bundleChild.transform.localPosition = new Vector3(0, currentBundle.size.y/2 + 0.2f, currentBundle.size.z/2);
+
+            Transform bundleFoot1 = bundle.transform.GetChild(1);
+            bundleFoot1.transform.localPosition = new Vector3( 0f,  0.1f, currentBundle.size.z *  0.2f);
+
+            Transform bundleFoot2 = bundle.transform.GetChild(2);
+            bundleFoot2.transform.localPosition = new Vector3( 0f,  0.1f, currentBundle.size.z *  0.8f);
+
+
+            Transform band1 = bundleFoot1.transform.GetChild(0);
+            //band1.transform.localPosition = new Vector3( 0f,  0.1f, shelfColumns[j].currentBundle.size.z *  0.8f);
+            band1.transform.localScale = new Vector3(1f, 1f,  (band1.transform.localScale.z - 0.03f) * currentBundle.size.y);
+
+
+            Transform band2 = bundleFoot2.transform.GetChild(0);
+            //band2.transform.localPosition = new Vector3( 0f,  0.1f, shelfColumns[j].currentBundle.size.z *  0.8f);
+            band2.transform.localScale = new Vector3(1f, 1f,  (band2.transform.localScale.z - 0.03f) * currentBundle.size.y);
+
+    }
+
+
 
     // Update is called once per frame
     void Update()

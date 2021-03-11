@@ -52,8 +52,39 @@ public class shelfBehavior : MonoBehaviour
       public List<Bundle> bundles = new List<Bundle>();
     }
 
+    //int counter = 5;
+
     void Start()
     {
+
+      GameObject stack = new GameObject();
+      stack.transform.position = this.transform.position;
+      stack.name = this.name + " Stack 0";
+
+
+      foreach (var newBundle in FindObjectsOfType(typeof(GameObject)) as GameObject[]){
+        if(newBundle.name == this.name + "bundle")
+        {
+          newBundle.transform.parent = stack.transform;
+        }
+      }
+
+      for(var i = 0; i < stack.transform.childCount; i++){
+        Vector3 newBundlePosition = Vector3.zero;
+        stack.transform.GetChild(0).localPosition = Vector3.zero;
+        if(i > 0){
+          float currentHeight = stack.transform.GetChild(i-1).localPosition.y + stack.transform.GetChild(i-1).GetChild(0).localScale.y+0.2f;
+          stack.transform.GetChild(i).localPosition = new Vector3(newBundlePosition.x, currentHeight, newBundlePosition.z);
+        }
+      }
+
+
+
+
+
+
+
+
       if(bundles.Count>0){
         shelfColumns.Insert(0, new ShelfColumn(){availableWidth = bundles[0].size.z});
         shelfColumns[0].bundles = bundles;
@@ -132,6 +163,7 @@ public class shelfBehavior : MonoBehaviour
     void Update()
     {
       //repositionBundles2();
+
     }
 
     List<Bundle> Sort(List<Bundle> unsortedBundles){
